@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            nameFilter="*"
+            id="org.mj.eclipse.reporting.classpath.ShowProjectReferencesContribution">
+         <action
+               id="org.mj.eclipse.reporting.classpath.action.ShowProjectReferencesAction"
+               label="Show Project references"
+               class="org.mj.eclipse.reporting.classpath.actions.ShowProjectReferencesAction"
+               menubarPath="additions"
+               enablesFor="?"
+               >
+         </action>
+      </objectContribution>
+   </extension>
+
+  <extension point="org.eclipse.ui.editors">
+      <editor
+            class="org.mj.eclipse.reporting.classpath.Editor"
+            default="true"
+            icon="elpanel.png"
+            id="org.mj.eclipse.reporting.classpath.Editor"
+            name="Classpath Diagram">
+      </editor>
+   </extension>
+   
+  <extension point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mj.eclipse.reporting.classpath.preferences.PreferencePage"
+           id="org.mj.eclipse.reporting.classpath.preferences.PreferencePage"
+           name="Classpath Report">
+     </page>
+  </extension>
+  
+  <extension point="org.eclipse.core.runtime.preferences">
+     <initializer
+           class="org.mj.eclipse.reporting.classpath.preferences.PreferenceInitializer">
+     </initializer>
+  </extension>
+  
+</plugin>
