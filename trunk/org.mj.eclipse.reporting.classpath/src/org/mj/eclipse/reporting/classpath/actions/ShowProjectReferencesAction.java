@@ -158,7 +158,7 @@ public class ShowProjectReferencesAction implements IObjectActionDelegate {
 
 									Display display = PlatformUI.getWorkbench().getDisplay();
 									OpenEditor openEditor = new OpenEditor();
-									display.asyncExec(openEditor);
+									display.syncExec(openEditor);
 									editorStatus = openEditor.status;
 								} else {
 									// In UI Thread
