@@ -128,7 +128,7 @@ abstract class LayoutAction extends SelectionAction {
 
 			});
 			algorithm.applyLayout(array, array2, 0, 0, pluginPreferences.getDouble(PreferenceConstants.LAYOUT_AREA_WIDTH),
-					pluginPreferences.getDouble(PreferenceConstants.LAYOUT_AREA_HEIGHT), true, true);
+					pluginPreferences.getDouble(PreferenceConstants.LAYOUT_AREA_HEIGHT), false, false);
 			// Compute new location delta
 			double dx = Double.MAX_VALUE;
 			double dy = Double.MAX_VALUE;
