@@ -102,17 +102,6 @@ public final class ProjectFigure extends Figure {
 	 */
 	public void setName(String name) {
 		projectNameLabel.setText(name);
-		titleBarBorder.setTextColor(ColorConstants.darkBlue);
-		if (name.startsWith("PicCore")) {
-			titleBarBorder.setLabel("<< Core Project >>");
-			titleBarBorder.setBackgroundColor(CORE_BG);
-		} else if (name.startsWith("BankingCore")) {
-			titleBarBorder.setLabel("<< Banking Core Project >>");
-			titleBarBorder.setBackgroundColor(BANKING_CORE_BG);
-		} else if (name.startsWith("Profolio")) {
-			titleBarBorder.setLabel("<< Profolio Project >>");
-			titleBarBorder.setBackgroundColor(PROFOLIO_BG);
-		}
 	}
 
 	/**
