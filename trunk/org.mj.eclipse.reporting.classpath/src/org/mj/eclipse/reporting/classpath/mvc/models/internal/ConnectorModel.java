@@ -115,7 +115,7 @@ public class ConnectorModel extends AbstractModel implements IConnector {
 	/**
 	 * @return the inCycle
 	 */
-	public final synchronized boolean isInCycle() {
+	public final boolean isInCycle() {
 		synchronized (inCycleLock) {
 			return inCycle;
 		}
@@ -125,7 +125,7 @@ public class ConnectorModel extends AbstractModel implements IConnector {
 	 * @param inCycle
 	 *            the inCycle to set
 	 */
-	public final synchronized void setInCycle(boolean inCycle) {
+	public final void setInCycle(boolean inCycle) {
 		synchronized (inCycleLock) {
 			this.inCycle = inCycle;
 		}

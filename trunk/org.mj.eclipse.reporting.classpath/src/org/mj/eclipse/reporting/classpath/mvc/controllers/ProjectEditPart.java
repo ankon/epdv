@@ -114,8 +114,9 @@ public final class ProjectEditPart extends AbstractComponentEditPart implements 
 		INode model = (INode) getModel();
 		if (model.getHeightInLayout() == -1 || model.getWidthInLayout() == -1) {
 			Dimension size = getFigure().getPreferredSize();
-//			model.setSizeInLayout(size.width * 1.618, size.height * 1.618); // Factor Phi
-			model.setSizeInLayout(size.width, size.height); 
+			// TODO remove hack
+			model.setSizeInLayout(size.width * 1.618, size.height * 1.618); // Factor Phi
+//			model.setSizeInLayout(size.width, size.height); 
 		}
 	}
 

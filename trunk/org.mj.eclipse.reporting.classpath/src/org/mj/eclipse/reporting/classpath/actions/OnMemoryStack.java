@@ -31,14 +31,14 @@
  */
 package org.mj.eclipse.reporting.classpath.actions;
 
-import java.util.Stack;
+import org.apache.commons.collections15.ArrayStack;
 
 /**
  * @author Mounir Jarraï
  *
  * @param <T>
  */
-public class OnMemoryStack<T> extends Stack<T> implements IStack<T> {
+public class OnMemoryStack<T> extends ArrayStack<T> implements IStack<T> {
 
 	/**
 	 * Default Constructor
