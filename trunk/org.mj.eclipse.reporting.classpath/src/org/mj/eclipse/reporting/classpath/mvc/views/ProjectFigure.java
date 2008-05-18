@@ -63,9 +63,6 @@ public final class ProjectFigure extends Figure {
 	private TitleBarBorder titleBarBorder;
 
 	private Color DEFAULT_BG = new Color(null, 180, 200, 255);
-	private Color CORE_BG = new Color(null, 255, 198, 45);
-	private Color BANKING_CORE_BG = new Color(null, 80, 150, 255);
-	private Color PROFOLIO_BG = new Color(null, 147, 240, 78);
 
 	public ProjectFigure() {
 		ToolbarLayout toolbarLayout = new ToolbarLayout();
