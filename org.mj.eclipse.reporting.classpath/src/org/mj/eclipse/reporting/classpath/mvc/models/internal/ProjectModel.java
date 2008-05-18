@@ -67,7 +67,7 @@ public class ProjectModel extends AbstractModel implements INode {
 			throw new IllegalArgumentException("project parameter can't ne null");
 		}
 		this.project = project;
-		this.name = this.project.getName();
+		this.name = this.project.getName().intern();
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class ProjectModel extends AbstractModel implements INode {
 	 * @see org.eclipse.core.resources.IResource#equals(java.lang.Object)
 	 */
 	public final boolean equals(Object other) {
-		if (super.equals(other))
+		if (this == other)
 			return true;
 
 		if (other == null || !ProjectModel.class.equals(other.getClass()))
@@ -122,14 +122,14 @@ public class ProjectModel extends AbstractModel implements INode {
 
 		ProjectModel project = (ProjectModel) other;
 
-		return getName().equals(project.getName());
+		return name.equals(project.name);
 	}
 
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return getName().hashCode();
+		return name.hashCode();
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class ProjectModel extends AbstractModel implements INode {
 	 */
 	@Override
 	public String toString() {
-		return getName();
+		return name;
 	}
 
 	/** *************************************************************************************** */
@@ -233,7 +233,7 @@ public class ProjectModel extends AbstractModel implements INode {
 	 */
 	public int compareTo(Object obj) {
 		if (obj == null || !ProjectModel.class.equals(obj.getClass())) {
-			throw new IllegalArgumentException("obj parameter is null or has wrong tpe!");
+			throw new IllegalArgumentException("obj parameter is null or has wrong type!");
 		}
 		ProjectModel project = (ProjectModel) obj;
 		return getName().compareTo(project.getName());

@@ -38,13 +38,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.collections15.ArrayStack;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
@@ -230,7 +230,7 @@ public class ShowProjectReferencesAction implements IObjectActionDelegate {
 	 */
 	private IStatus computeModel(final IDiagram model, IProgressMonitor monitor) {
 		// Using stack to avoid recursive algorithm
-		Stack<IProject> stack = new Stack<IProject>();
+		ArrayStack<IProject> stack = new ArrayStack<IProject>();
 		// Used to remember traversed nodes
 		Set<IProject> doneSet = new HashSet<IProject>();
 		try {
@@ -272,6 +272,15 @@ public class ShowProjectReferencesAction implements IObjectActionDelegate {
 			}
 			LOGGER.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "Dependencies model contains " + model.getProjects().size()
 					+ " projects and " + model.getConnectors().size() + " connections"));
+			
+			long maxDeg = 0;
+			long minDeg = Long.MAX_VALUE;
+			for (INode node : model.getProjects()) {
+				minDeg = Math.min(minDeg, node.getIncamingConnections().size() + node.getOutgoingConnections().size());
+				maxDeg = Math.max(maxDeg, node.getIncamingConnections().size() + node.getOutgoingConnections().size());
+			}
+			LOGGER.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "Graph min degree = " + minDeg));
+			LOGGER.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "Graph max degree = " + maxDeg));
 			return Status.OK_STATUS;
 		} catch (CoreException e) {
 			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Oops ! Stupid thing happends", e);
@@ -306,15 +315,8 @@ public class ShowProjectReferencesAction implements IObjectActionDelegate {
 		try {
 			stack = new OnMemoryStack<MemoPoint>(); //VirtualMemoryStack<MemoPoint>();
 			// Simulate recursive function fist call.
-			stack.push(new MemoPoint(src, new ArrayList<IConnector>(), new Stack<INode>()));
+			stack.push(new MemoPoint(src, new ArrayList<IConnector>(), new ArrayStack<INode>()));
 			while (!stack.isEmpty()) {
-				// TODO : Ces lignes ralentissent considérablement l'algorithme ! trouver un autre moyen d'implémenter l'annulation
-				//				synchronized (monitor) {
-				//					if (monitor.isCanceled()) {
-				//						return null;
-				//					}
-				//				}
-
 				// Simulate recursive function exit.
 				MemoPoint memoPoint = stack.pop();
 				Collection<IConnector> outgoingConnection = memoPoint.src.getOutgoingConnections();
@@ -322,57 +324,61 @@ public class ShowProjectReferencesAction implements IObjectActionDelegate {
 					if (connector.isInCycle()) {
 						continue;
 					}
-					synchronized (connector) {
-						// Makes a copy of the current path to enable back tracking if no solution is found.
-						ArrayList<IConnector> subPath = (ArrayList<IConnector>) memoPoint.path.clone();
-						subPath.add(connector);
-						if (!connector.getTarget().equals(src) && !connector.getTarget().equals(memoPoint.src)) {
-							// -- VERSION 2: Check for cycle --						
-							int cycleStart = -1;
-							int cycleEnd = -1;
-							Stack<INode> compressedSubPath = (Stack<INode>) memoPoint.compressedPath.clone(); // using only nodes (No edge) {startNode, nextNode, nextNode, ..., endNode}
-							if (compressedSubPath.isEmpty()) {
-								// Add startNode
-								compressedSubPath.push(connector.getSource());
-								compressedSubPath.push(connector.getTarget());
-							} else if (compressedSubPath.contains(connector.getTarget())) {
-								// CYCLE FOUND
-								cycleStart = compressedSubPath.indexOf(connector.getTarget());
-								cycleEnd = compressedSubPath.size() - 1;
-							} else {
-								// Add nextNode
-								compressedSubPath.push(connector.getTarget());
-							}
-							if (cycleStart != -1 && cycleEnd != -1) {
-								ArrayList<IConnector> cyclePath = new ArrayList<IConnector>(cycleEnd - cycleStart + 1);
-								// mark cycle
-								for (int i = cycleStart; i <= cycleEnd; i++) {
-									IConnector inCycleConnector = subPath.get(i);
-									inCycleConnector.setInCycle(true);
-									cyclePath.add(inCycleConnector);
-								}
-								//	System.out.println("Cycle found : " + cyclePath + " as subset of path : " + subPath);
-								continue;
-							}
-							// -- VERSION 2 :  End cycle detection as subset of path --
-
-							if (connector.getTarget().equals(dst)) {
-								// Path from src to dst is found
-								allPath.add(subPath);
-								continue;
-							} else {
-								// Simulate recursive function call.
-								MemoPoint mp = new MemoPoint(connector.getTarget(), subPath, compressedSubPath);
-								stack.push(mp);
-							}
+					// Makes a copy of the current path to enable back tracking if no solution is found.
+					ArrayList<IConnector> subPath = (ArrayList<IConnector>) memoPoint.path.clone();
+					subPath.add(connector);
+					
+					INode connectorSource = connector.getSource();
+					INode connectorTarget = connector.getTarget();
+					if (!connectorTarget.equals(src) && !connectorTarget.equals(memoPoint.src)) {
+						// -- VERSION 2: Check for cycle --						
+						int cycleStart = -1;
+						int cycleEnd = -1;
+						ArrayStack<INode> compressedSubPath = (ArrayStack<INode>) memoPoint.compressedPath.clone(); // using only nodes (No edge) {startNode, nextNode, nextNode, ..., endNode}
+						if (compressedSubPath.isEmpty()) {
+							// Add startNode
+							compressedSubPath.push(connectorSource);
+							compressedSubPath.push(connectorTarget);
+						} else if (compressedSubPath.contains(connectorTarget)) {
+							// CYCLE FOUND
+							cycleStart = compressedSubPath.indexOf(connectorTarget);
+							cycleEnd = compressedSubPath.size() - 1;
 						} else {
-							// CYCLE FOUND = subPath
-							//							System.out.println("Cycle found in path : " + subPath);
-							for (IConnector inCycleConnector : subPath) {
+							// Add nextNode
+							compressedSubPath.push(connectorTarget);
+						}
+						if (cycleStart != -1 && cycleEnd != -1) {
+								ArrayList<IConnector> cyclePath = new ArrayList<IConnector>(cycleEnd - cycleStart + 1);
+							// mark cycle
+							for (int i = cycleStart; i <= cycleEnd; i++) {
+								IConnector inCycleConnector = subPath.get(i);
 								inCycleConnector.setInCycle(true);
+								cyclePath.add(inCycleConnector);
 							}
+							Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Cycle found : " + cyclePath
+									+ " as subset of path : " + subPath);
+							LOGGER.log(status);
 							continue;
 						}
+						// -- VERSION 2 :  End cycle detection as subset of path --
+
+						if (connectorTarget.equals(dst)) {
+							// Path from src to dst is found
+							allPath.add(subPath);
+							continue;
+						} else {
+							// Simulate recursive function call.
+							MemoPoint mp = new MemoPoint(connectorTarget, subPath, compressedSubPath);
+							stack.push(mp);
+						}
+					} else {
+						// CYCLE FOUND = subPath
+						Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Cycle found in path : " + subPath);
+						LOGGER.log(status);
+						for (IConnector inCycleConnector : subPath) {
+							inCycleConnector.setInCycle(true);
+						}
+						continue;
 					}
 				}
 			}
@@ -561,13 +567,13 @@ public class ShowProjectReferencesAction implements IObjectActionDelegate {
 final class MemoPoint implements Serializable {
 	ArrayList<IConnector> path;
 	INode src;
-	Stack<INode> compressedPath;// using only nodes (No edge) {startNode, nextNode, nextNode, ..., endNode}
+	ArrayStack<INode> compressedPath;// using only nodes (No edge) {startNode, nextNode, nextNode, ..., endNode}
 
 	/**
 	 * @param src
 	 * @param path
 	 */
-	MemoPoint(INode src, ArrayList<IConnector> path, Stack<INode> compressedPath) {
+	MemoPoint(INode src, ArrayList<IConnector> path, ArrayStack<INode> compressedPath) {
 		this.path = path;
 		this.src = src;
 		this.compressedPath = compressedPath;
