@@ -59,7 +59,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		addField(new IntegerFieldEditor(PreferenceConstants.LAYOUT_AREA_WIDTH, "Layout area &width", getFieldEditorParent()));
 		addField(new IntegerFieldEditor(PreferenceConstants.LAYOUT_AREA_HEIGHT, "Layout area &height", getFieldEditorParent()));
 		addField(new IntegerFieldEditor(PreferenceConstants.THREAD_POOL_SIZE, "&Thread Pool size", getFieldEditorParent()));
-		addField(new IntegerFieldEditor(PreferenceConstants.HID_CONNECTION_BY_COST, "&Hid connections with cost > ", getFieldEditorParent()));
+		addField(new IntegerFieldEditor(PreferenceConstants.HID_CONNECTION_BY_COST, "&Hide connections with cost > ", getFieldEditorParent()));
 
 //		addField(new BooleanFieldEditor(PreferenceConstants.HID_DIRECT_CONNECTION, "&Hid direct connections", getFieldEditorParent()));
 		addField(new BooleanFieldEditor(PreferenceConstants.LOG_POSSIBLE_PATHS_OCCURENCE, "&Log path occurences", getFieldEditorParent()));
