@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.mj.eclipse.reporting.classpath"
-      label="Feature Feature"
+      label="Eclipse Project Dependencies Viewer"
       version="1.0.0"
       provider-name="Mounir Jarraï">
 
