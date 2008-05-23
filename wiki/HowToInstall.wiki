@@ -1,0 +1,3 @@
+#labels Phase-Deploy
+||# Go to _menu Help->Software Updates->Find and iinstall..._  || http://epdv.googlecode.com/svn/trunk/org.mj.eclipse.reporting.classpath.doc/images/UpdateSite/update_site_1.png||
+||#Select radio button _Search for new features to install_ and click on _Next_ button||http://epdv.googlecode.com/svn/trunk/org.mj.eclipse.reporting.classpath.doc/images/UpdateSite/update_site_2.png||
