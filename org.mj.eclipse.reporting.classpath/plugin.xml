@@ -23,9 +23,9 @@
       <editor
             class="org.mj.eclipse.reporting.classpath.Editor"
             default="true"
-            icon="elpanel.png"
+            icon="./icons/disconnect.png"
             id="org.mj.eclipse.reporting.classpath.Editor"
-            name="Classpath Diagram">
+            name="Dependencies Diagram">
       </editor>
    </extension>
    

@@ -73,7 +73,7 @@ public final class OnMemoryEditorInput implements IEditorInput {
 	 * @see org.eclipse.ui.IEditorInput#getName()
 	 */
 	public String getName() {
-		return "ClassPath diagram";//model.getRootProject().getName(); //$NON-NLS-1$
+		return model.getRootProject().getName() + " dependencies";
 	}
 
 	/**
