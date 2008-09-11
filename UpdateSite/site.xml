@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+   <feature url="features/org.mj.eclipse.reporting.classpath_1.0.1.jar" id="org.mj.eclipse.reporting.classpath" version="1.0.1">
+      <category name="Eclipse Project Dependencies Viewer"/>
+   </feature>
    <feature url="features/org.mj.eclipse.reporting.classpath_1.0.0.jar" id="org.mj.eclipse.reporting.classpath" version="1.0.0">
       <category name="Eclipse Project Dependencies Viewer"/>
    </feature>

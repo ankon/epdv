@@ -2,7 +2,7 @@
 <feature
       id="org.mj.eclipse.reporting.classpath"
       label="Eclipse Project Dependencies Viewer"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Mounir Jarraï">
 
    <description url="Eclipse Project Dependencies viewer">
@@ -56,7 +56,7 @@
          id="org.mj.eclipse.reporting.classpath"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.1"
          unpack="false"/>
 
 </feature>
