@@ -35,7 +35,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -71,7 +70,6 @@ import org.mj.eclipse.reporting.classpath.Editor;
 import org.mj.eclipse.reporting.classpath.OnMemoryEditorInput;
 import org.mj.eclipse.reporting.classpath.mvc.models.IConnector;
 import org.mj.eclipse.reporting.classpath.mvc.models.IDiagram;
-import org.mj.eclipse.reporting.classpath.mvc.models.IDiagramElementsFactory;
 import org.mj.eclipse.reporting.classpath.mvc.models.INode;
 import org.mj.eclipse.reporting.classpath.mvc.models.internal.DiagramModel;
 import org.mj.eclipse.reporting.classpath.preferences.PreferenceConstants;
@@ -276,8 +274,8 @@ public class ShowProjectReferencesAction implements IObjectActionDelegate {
 			long maxDeg = 0;
 			long minDeg = Long.MAX_VALUE;
 			for (INode node : model.getProjects()) {
-				minDeg = Math.min(minDeg, node.getIncamingConnections().size() + node.getOutgoingConnections().size());
-				maxDeg = Math.max(maxDeg, node.getIncamingConnections().size() + node.getOutgoingConnections().size());
+				minDeg = Math.min(minDeg, node.getIncomingConnections().size() + node.getOutgoingConnections().size());
+				maxDeg = Math.max(maxDeg, node.getIncomingConnections().size() + node.getOutgoingConnections().size());
 			}
 			LOGGER.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "Graph min degree = " + minDeg));
 			LOGGER.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "Graph max degree = " + maxDeg));
@@ -490,72 +488,6 @@ public class ShowProjectReferencesAction implements IObjectActionDelegate {
 			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Oops ! Stupid thing happends", e);
 		}
 		return Status.OK_STATUS;
-	}
-
-	//******************************************************************************************************************************
-	// Sample recursive implementation. Used as documentation.
-	// DO NOT DELETE.
-	//******************************************************************************************************************************
-
-	/**
-	 * @param allPath
-	 * @param path
-	 * @param src
-	 * @param dst
-	 */
-	private void backTrackingPathRecursively(final List<List<IConnector>> allPath, final List<IConnector> path, INode src, INode dst) {
-		if (allPath == null || path == null || src == null || dst == null) {
-			throw new IllegalArgumentException("allPath, path, src and dst parameters can't be null");
-		}
-
-		if (src.equals(dst)) {
-			return;
-		}
-
-		Collection<IConnector> outgoingConnection = src.getOutgoingConnections();
-		for (Iterator<IConnector> iterator = outgoingConnection.iterator(); iterator.hasNext();) {
-			IConnector connector = iterator.next();
-			ArrayList<IConnector> subpath = new ArrayList<IConnector>(path);
-			subpath.add(connector);
-			if (connector.getTarget().equals(dst)) {
-				allPath.add(subpath);
-				continue;
-			} else {
-				backTrackingPathRecursively(allPath, subpath, connector.getTarget(), dst);
-			}
-		}
-
-	}
-
-	/**
-	 * @param project
-	 * @throws CoreException
-	 */
-	private void computeModelRecusively(IDiagramElementsFactory model, IProject project) {
-		try {
-			IProjectDescription description = project.getDescription();
-
-			//			IProject[] referencedProjects = description.getReferencedProjects();
-			//			for (int i = 0; i < referencedProjects.length; i++) {
-			//				IProject referencedProject = referencedProjects[i];
-			//				//$ANALYSIS-IGNORE
-			//				System.out.println(project.getName() + "->" + referencedProject.getName());
-			//
-			//				IConnector connector = new IConnector(project,  referencedProject);
-			//				model.addConnector(connector);
-			//
-			//				computeModel(model, referencedProject);
-			//			}
-
-			IProject[] dynamicReferences = description.getDynamicReferences();
-			for (int i = 0; i < dynamicReferences.length; i++) {
-				IProject referencedProject = dynamicReferences[i];
-				model.createConnector(project, referencedProject);
-				computeModelRecusively(model, referencedProject);
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
