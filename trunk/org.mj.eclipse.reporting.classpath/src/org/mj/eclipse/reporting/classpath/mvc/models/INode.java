@@ -58,6 +58,6 @@ public interface INode extends LayoutEntity, Serializable {
 
 	public Collection<IConnector> getOutgoingConnections();
 
-	public Collection<IConnector> getIncamingConnections();
+	public Collection<IConnector> getIncomingConnections();
 
 }

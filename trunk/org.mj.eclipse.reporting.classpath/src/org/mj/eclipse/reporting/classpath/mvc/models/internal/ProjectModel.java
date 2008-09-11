@@ -31,13 +31,19 @@
  */
 package org.mj.eclipse.reporting.classpath.mvc.models.internal;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.apache.commons.collections15.CollectionUtils;
+import org.apache.commons.collections15.Transformer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionDimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.zest.layouts.constraints.BasicEntityConstraint;
 import org.eclipse.zest.layouts.constraints.EntityPriorityConstraint;
 import org.eclipse.zest.layouts.constraints.LabelLayoutConstraint;
@@ -47,9 +53,9 @@ import org.mj.eclipse.reporting.classpath.mvc.models.INode;
 
 /**
  * @author Mounir Jarraï
- *
+ * 
  */
-public class ProjectModel extends AbstractModel implements INode {
+public class ProjectModel extends AbstractModel implements INode, IPropertySource {
 
 	private transient IProject project;
 	private String name;
@@ -90,10 +96,26 @@ public class ProjectModel extends AbstractModel implements INode {
 	/**
 	 * @return the incamingConnection
 	 */
-	public final Collection<IConnector> getIncamingConnections() {
+	public final Collection<IConnector> getIncomingConnections() {
 		synchronized (incamingConnections) {
 			return Collections.unmodifiableCollection(incamingConnections);
 		}
+	}
+
+	private Collection<INode> getOutgoingProjects() {
+		return CollectionUtils.collect(outgoingConnections, new Transformer<IConnector, INode>() {
+			public INode transform(IConnector connector) {
+				return connector.getTarget();
+			}
+		});
+	}
+
+	private Collection<INode> getIncomingProjects() {
+		return CollectionUtils.collect(incamingConnections, new Transformer<IConnector, INode>() {
+			public INode transform(IConnector connector) {
+				return connector.getSource();
+			}
+		});
 	}
 
 	protected void addOutgoingConnection(IConnector connector) {
@@ -237,6 +259,55 @@ public class ProjectModel extends AbstractModel implements INode {
 		}
 		ProjectModel project = (ProjectModel) obj;
 		return getName().compareTo(project.getName());
+	}
+
+	/** *************************************************************************************** */
+	// For Property viewer
+	/** *************************************************************************************** */
+
+	public static String PROJECT_NAME = "PROJECT_NAME"; //$NON-NLS-1$
+	public static String TOP_DOWN_DEP = "TOP_DOWN_DEP"; //$NON-NLS-1$
+	public static String BUTTOM_UP_DEP = "BUTTOM_UP_DEP"; //$NON-NLS-1$
+	public static String POSITION = "POSITION"; //$NON-NLS-1$
+
+	static IPropertyDescriptor[] propertyDescriptors = new IPropertyDescriptor[] { 
+		new PropertyDescriptor(PROJECT_NAME, "Project Name"),
+		new PropertyDescriptor(TOP_DOWN_DEP, "Outgoing dependencies"), 
+		new PropertyDescriptor(BUTTOM_UP_DEP, "Incoming dependencies"),
+		new PropertyDescriptor(POSITION,"Position"),
+	};
+
+	final String POSITION_FORMAT = "({0, number, integer}, {1, number, integer})";
+	
+	public Object getEditableValue() {
+		return null;
+	}
+
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return propertyDescriptors;
+	}
+
+	public Object getPropertyValue(Object id) {
+		if (PROJECT_NAME.equals(id))
+			return getName();
+		else if (TOP_DOWN_DEP.equals(id))
+			return getOutgoingProjects();
+		else if (BUTTOM_UP_DEP.equals(id))
+			return getIncomingProjects();
+		else if (POSITION.equals(id)) {
+			return MessageFormat.format(POSITION_FORMAT, new Object[] { getXInLayout(), getYInLayout() });
+		}
+		return null;
+	}
+
+	public boolean isPropertySet(Object id) {
+		return false;
+	}
+
+	public void resetPropertyValue(Object id) {
+	}
+
+	public void setPropertyValue(Object id, Object value) {
 	}
 
 }

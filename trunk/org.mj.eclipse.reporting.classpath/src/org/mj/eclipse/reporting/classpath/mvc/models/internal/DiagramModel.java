@@ -201,7 +201,7 @@ public class DiagramModel extends AbstractModel implements IDiagram, Serializabl
 	 * @return
 	 */
 	public List<IConnector> getProjectIncomingConnections(INode project) {
-		return Collections.unmodifiableList(new ArrayList<IConnector>(project.getIncamingConnections()));
+		return Collections.unmodifiableList(new ArrayList<IConnector>(project.getIncomingConnections()));
 	}
 
 	/** *************************************************************************************** */

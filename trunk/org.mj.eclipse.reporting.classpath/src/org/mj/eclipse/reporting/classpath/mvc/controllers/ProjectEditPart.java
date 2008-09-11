@@ -223,7 +223,7 @@ public final class ProjectEditPart extends AbstractComponentEditPart implements 
 	@Override
 	protected List<IConnector> getModelTargetConnections() {
 		INode projectModel = (INode) getModel();
-		Collection<IConnector> incamingConnections = projectModel.getIncamingConnections();
+		Collection<IConnector> incamingConnections = projectModel.getIncomingConnections();
 		return applyFilters(incamingConnections);
 	}
 
