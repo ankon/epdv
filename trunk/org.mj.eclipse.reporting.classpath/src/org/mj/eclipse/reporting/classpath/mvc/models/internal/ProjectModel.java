@@ -41,8 +41,11 @@ import org.apache.commons.collections15.Transformer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionDimension;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.views.properties.ColorPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.zest.layouts.constraints.BasicEntityConstraint;
 import org.eclipse.zest.layouts.constraints.EntityPriorityConstraint;
@@ -55,13 +58,17 @@ import org.mj.eclipse.reporting.classpath.mvc.models.INode;
  * @author Mounir Jarraï
  * 
  */
-public class ProjectModel extends AbstractModel implements INode, IPropertySource {
+public class ProjectModel extends AbstractModel implements INode, IPropertySource2 {
+
+	private static final Color DEFAULT_COLOR = new Color(null, 180, 200, 255);
 
 	private transient IProject project;
 	private String name;
 
 	private Collection<IConnector> outgoingConnections = new HashSet<IConnector>();
 	private Collection<IConnector> incamingConnections = new HashSet<IConnector>();
+
+	private Color color = DEFAULT_COLOR;
 
 	/**
 	 * @param project
@@ -82,6 +89,16 @@ public class ProjectModel extends AbstractModel implements INode, IPropertySourc
 	 */
 	public String getName() {
 		return name;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		Object oldValue = this.color;
+		this.color = color;
+		firePropertyChange(Properties.COLOR.toString(), oldValue, this.color);
 	}
 
 	/**
@@ -265,28 +282,55 @@ public class ProjectModel extends AbstractModel implements INode, IPropertySourc
 	// For Property viewer
 	/** *************************************************************************************** */
 
-	public static String PROJECT_NAME = "PROJECT_NAME"; //$NON-NLS-1$
-	public static String TOP_DOWN_DEP = "TOP_DOWN_DEP"; //$NON-NLS-1$
-	public static String BUTTOM_UP_DEP = "BUTTOM_UP_DEP"; //$NON-NLS-1$
-	public static String POSITION = "POSITION"; //$NON-NLS-1$
+	public static final String PROJECT_NAME = "PROJECT_NAME"; //$NON-NLS-1$
 
-	static IPropertyDescriptor[] propertyDescriptors = new IPropertyDescriptor[] { 
-		new PropertyDescriptor(PROJECT_NAME, "Project Name"),
-		new PropertyDescriptor(TOP_DOWN_DEP, "Outgoing dependencies"), 
-		new PropertyDescriptor(BUTTOM_UP_DEP, "Incoming dependencies"),
-		new PropertyDescriptor(POSITION,"Position"),
-	};
+	public static final String TOP_DOWN_DEP = "TOP_DOWN_DEP"; //$NON-NLS-1$
+
+	public static final String BUTTOM_UP_DEP = "BUTTOM_UP_DEP"; //$NON-NLS-1$
+
+	public static final String POSITION = "POSITION"; //$NON-NLS-1$
+
+	public static final String COLOR = "COLOR"; //$NON-NLS-1$
+
+	private static final PropertyDescriptor PROPERTY_DESCRIPTOR_PN = new PropertyDescriptor(PROJECT_NAME, "Project Name");
+
+	private static final PropertyDescriptor PROPERTY_DESCRIPTOR_TDD = new PropertyDescriptor(TOP_DOWN_DEP, "Outgoing dependencies");
+
+	private static final PropertyDescriptor PROPERTY_DESCRIPTOR_BUD = new PropertyDescriptor(BUTTOM_UP_DEP, "Incoming dependencies");
+
+	private static final PropertyDescriptor PROPERTY_DESCRIPTOR_P = new PropertyDescriptor(POSITION, "Position");
+
+	private static final PropertyDescriptor COLOR_PROPERTY_DESCRIPTOR_C = new ColorPropertyDescriptor(COLOR, "Color");
+
+	public static final String  CATEGORY_DEPENDENCIES = "Dependencies";
+	
+	static {
+		PROPERTY_DESCRIPTOR_TDD.setCategory(CATEGORY_DEPENDENCIES);
+		PROPERTY_DESCRIPTOR_BUD.setCategory(CATEGORY_DEPENDENCIES);
+	}
+	
+	private static final IPropertyDescriptor[] propertyDescriptors = new IPropertyDescriptor[] { PROPERTY_DESCRIPTOR_PN,
+			PROPERTY_DESCRIPTOR_TDD, PROPERTY_DESCRIPTOR_BUD, PROPERTY_DESCRIPTOR_P, COLOR_PROPERTY_DESCRIPTOR_C };
 
 	final String POSITION_FORMAT = "({0, number, integer}, {1, number, integer})";
-	
+
+	/**
+	 * @see org.eclipse.ui.views.properties.IPropertySource#getEditableValue()
+	 */
 	public Object getEditableValue() {
-		return null;
+		return this;
 	}
 
+	/**
+	 * @see org.eclipse.ui.views.properties.IPropertySource#getPropertyDescriptors()
+	 */
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		return propertyDescriptors;
 	}
 
+	/**
+	 * @see org.eclipse.ui.views.properties.IPropertySource#getPropertyValue(java.lang.Object)
+	 */
 	public Object getPropertyValue(Object id) {
 		if (PROJECT_NAME.equals(id))
 			return getName();
@@ -294,20 +338,49 @@ public class ProjectModel extends AbstractModel implements INode, IPropertySourc
 			return getOutgoingProjects();
 		else if (BUTTOM_UP_DEP.equals(id))
 			return getIncomingProjects();
-		else if (POSITION.equals(id)) {
+		else if (POSITION.equals(id))
 			return MessageFormat.format(POSITION_FORMAT, new Object[] { getXInLayout(), getYInLayout() });
-		}
+		else if (COLOR.equals(id))
+			return color.getRGB();
 		return null;
 	}
 
+	/**
+	 * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang.Object, java.lang.Object)
+	 */
+	public void setPropertyValue(Object id, Object value) {
+		if (COLOR.equals(id)) {
+			setColor(new Color(null, (RGB) value));
+		}
+	}
+
+	/**
+	 * @see org.eclipse.ui.views.properties.IPropertySource#isPropertySet(java.lang.Object)
+	 */
 	public boolean isPropertySet(Object id) {
+		if (COLOR.equals(id)) {
+			return !DEFAULT_COLOR.equals(color);
+		}
 		return false;
 	}
 
+	/**
+	 * @see org.eclipse.ui.views.properties.IPropertySource#resetPropertyValue(java.lang.Object)
+	 */
 	public void resetPropertyValue(Object id) {
+		if (COLOR.equals(id)) {
+			setColor(DEFAULT_COLOR);
+		}
 	}
 
-	public void setPropertyValue(Object id, Object value) {
+	/**
+	 * @see org.eclipse.ui.views.properties.IPropertySource2#isPropertyResettable(java.lang.Object)
+	 */
+	public boolean isPropertyResettable(Object id) {
+		if (COLOR.equals(id)) {
+			return true;
+		}
+		return false;
 	}
 
 }

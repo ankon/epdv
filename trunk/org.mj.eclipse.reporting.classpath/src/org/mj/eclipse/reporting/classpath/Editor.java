@@ -163,6 +163,8 @@ public final class Editor extends GraphicalEditorWithFlyoutPalette {
 		graphicalViewer.setEditPartFactory(new DiagramPartFactory());
 		graphicalViewer.setContents(getModel());
 
+		setPartName(getModel().getRootProject().getName());
+		
 		// Add contextuel Menu
 		LayoutActions layoutActions = new LayoutActions(this);
 		ContextMenuProvider contextMenuProvider = new ContextMenuProvider(getGraphicalViewer()) {
