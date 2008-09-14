@@ -50,7 +50,7 @@ import org.mj.eclipse.reporting.classpath.preferences.PreferenceConstants;
 
 /**
  * @author Mounir Jarraï
- *
+ * 
  */
 public final class ProjectFigure extends Figure {
 
@@ -62,7 +62,7 @@ public final class ProjectFigure extends Figure {
 
 	private TitleBarBorder titleBarBorder;
 
-	private Color DEFAULT_BG = new Color(null, 180, 200, 255);
+	private Color titleColor = ColorConstants.lightGray;
 
 	public ProjectFigure() {
 		ToolbarLayout toolbarLayout = new ToolbarLayout();
@@ -75,7 +75,7 @@ public final class ProjectFigure extends Figure {
 		titleBarBorder.setFont(steriotypeFont);
 
 		titleBarBorder.setTextColor(ColorConstants.darkBlue);
-		titleBarBorder.setBackgroundColor(DEFAULT_BG);
+		titleBarBorder.setBackgroundColor(titleColor);
 
 		titleBarBorder.setPadding(INSETS);
 		titleBarBorder.setTextAlignment(PositionConstants.CENTER);
@@ -104,6 +104,16 @@ public final class ProjectFigure extends Figure {
 	 */
 	public void setName(String name) {
 		projectNameLabel.setText(name);
+	}
+
+	/**
+	 * @param titleColor
+	 */
+	public void setTitleColor(Color titleColor) {
+		this.titleColor = titleColor;
+		titleBarBorder.setBackgroundColor(this.titleColor);
+		revalidate();
+		repaint();
 	}
 
 	/**

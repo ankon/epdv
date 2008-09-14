@@ -50,9 +50,11 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
+import org.eclipse.swt.graphics.Color;
 import org.mj.eclipse.reporting.classpath.Activator;
 import org.mj.eclipse.reporting.classpath.mvc.models.IConnector;
 import org.mj.eclipse.reporting.classpath.mvc.models.INode;
+import org.mj.eclipse.reporting.classpath.mvc.models.internal.ProjectModel;
 import org.mj.eclipse.reporting.classpath.mvc.views.ProjectFigure;
 import org.mj.eclipse.reporting.classpath.preferences.PreferenceConstants;
 
@@ -90,7 +92,10 @@ public final class ProjectEditPart extends AbstractComponentEditPart implements 
 		ProjectFigure figure = (ProjectFigure) getFigure();
 		INode model = (INode) getModel();
 		figure.setName(model.getName());
-
+		
+		// TODO Remove the cast hack !  Never access internal model
+		figure.setTitleColor(((ProjectModel)model).getColor());
+		
 		refreshLayout();
 	}
 
@@ -175,6 +180,8 @@ public final class ProjectEditPart extends AbstractComponentEditPart implements 
 		} else if (INode.Properties.HEIGHT.represents(evt)) {
 			projectFigure.setSize(projectFigure.getSize().width, ((Double) evt.getNewValue()).intValue());
 			refreshLayout();
+		} else if (INode.Properties.COLOR.represents(evt)) {
+			projectFigure.setTitleColor((Color) evt.getNewValue());
 		}
 	}
 

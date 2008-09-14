@@ -29,35 +29,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package org.mj.eclipse.reporting.classpath.mvc.models;
+package org.mj.eclipse.reporting.classpath.actions;
 
-import java.beans.PropertyChangeEvent;
-import java.io.Serializable;
-import java.util.Collection;
-
-import org.eclipse.zest.layouts.LayoutEntity;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 
 /**
  * @author Mounir Jarraï
- *
+ * 
  */
-public interface INode extends LayoutEntity, Serializable {
+public class ShowProjectTopDownReferencesAction extends ShowProjectReferencesAction {
 
-	public enum Properties {
-		NAME, HEIGHT, WIDTH, X, Y, SIZE, LOCATION, COLOR;
+	/**
+	 * @see org.mj.eclipse.reporting.classpath.actions.ShowProjectReferencesAction#run(org.eclipse.core.resources.IProject)
+	 */
+	protected void run(IProject project) {
+		ModelFactory.createAndSimplifyModel(project, new ModelFactory.IProjectDependenciesProvider() {
 
-		public boolean represents(PropertyChangeEvent evt) {
-			if (evt != null) {
-				return this.toString().equals(evt.getPropertyName());
+			public IProject[] getDependencies(IProject project) throws CoreException {
+				return project.getReferencedProjects();
 			}
-			return false;
-		}
-	};
 
-	public String getName();
+			public DependenciesDirection getDirection() {
+				return DependenciesDirection.TOP_DOWN;
+			}
 
-	public Collection<IConnector> getOutgoingConnections();
-
-	public Collection<IConnector> getIncomingConnections();
+		});
+	}
 
 }
