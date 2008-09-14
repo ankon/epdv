@@ -6,6 +6,9 @@
    <feature url="features/org.mj.eclipse.reporting.classpath_1.0.0.jar" id="org.mj.eclipse.reporting.classpath" version="1.0.0">
       <category name="Eclipse Project Dependencies Viewer"/>
    </feature>
+   <feature url="features/org.mj.eclipse.reporting.classpath_1.1.0.jar" id="org.mj.eclipse.reporting.classpath" version="1.1.0">
+      <category name="Eclipse Project Dependencies Viewer"/>
+   </feature>
    <category-def name="Eclipse Project Dependencies Viewer" label="Eclipse Project Dependencies Viewer">
       <description>
          This plugin provides a dependencies viewer for the Eclipse development platform. It also allows the cycles detection.

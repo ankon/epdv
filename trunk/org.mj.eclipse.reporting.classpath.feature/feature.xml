@@ -2,7 +2,7 @@
 <feature
       id="org.mj.eclipse.reporting.classpath"
       label="Eclipse Project Dependencies Viewer"
-      version="1.0.1"
+      version="1.1.0"
       provider-name="Mounir Jarraï">
 
    <description url="Eclipse Project Dependencies viewer">
@@ -50,13 +50,14 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.gef"/>
+      <import plugin="org.eclipse.ui.views"/>
    </requires>
 
    <plugin
          id="org.mj.eclipse.reporting.classpath"
          download-size="0"
          install-size="0"
-         version="1.0.1"
+         version="1.1.0"
          unpack="false"/>
 
 </feature>
